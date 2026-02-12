@@ -9,6 +9,16 @@
 
 1. [Singgih Soephomo](singgihmardianto@gmail.com)
 
+## Setup
+
+1. Install with `bun install`
+2. Copy `.env.example` to `.env`. Make sure you already create the database and username.
+
+## Generate & run migration
+
+1. Run `bun migrate:generate` to create migration file from the `_entities`
+2. Run `bun migrate:run` to migrate the database
+
 ## How to
 
 ### Using Server Components with Libraries
