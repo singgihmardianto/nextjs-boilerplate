@@ -1,9 +1,6 @@
 import React from "react";
-import { Menu } from "@/libraries/_entites/menu";
-import MenuService from "@/libraries/_services/menuService";
 
 export default async function AdminPage() {
-  const menus: Menu[] = await (await MenuService()).index();
   return (
     <div className="p-4">
       <h1 className="mb-4 text-2xl font-bold">Admin Dashboard</h1>
@@ -12,11 +9,7 @@ export default async function AdminPage() {
       </p>
 
       <ul className="list-disc pl-5">
-        {menus.map(menu => (
-          <li key={menu.id}>
-            {menu.name} - {menu.path}
-          </li>
-        ))}
+        <li>User Management</li>
       </ul>
     </div>
   );
