@@ -4,7 +4,7 @@ import crypto from "crypto";
 export class UserManagementService {
   constructor(private userManagement: IUserManagement) {}
 
-  async createUser(data: CreateUserInput) {
+  createUser(data: CreateUserInput) {
     if (!data.email.includes("@")) {
       throw new Error("Invalid email address");
     }

@@ -23,4 +23,5 @@ export interface IUserManagement {
   get: (userId: number) => Promise<User | null>;
   list: () => Promise<User[]>;
   update: (userId: number, data: Partial<User>) => Promise<UpdateResult>;
+  resetPassword: (userId: number, newPassword: string) => Promise<UpdateResult>;
 }

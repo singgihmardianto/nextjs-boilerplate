@@ -5,11 +5,12 @@ import { SidebarProvider, useSidebar } from "@/context/SidebarContext";
 import AppHeader from "@/layout/AppHeader";
 import AppSidebar, { NavItem } from "@/layout/MyAppSidebar";
 import Backdrop from "@/layout/Backdrop";
-import React from "react";
+import React, { useReducer } from "react";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "@fortawesome/fontawesome-svg-core/styles.css";
-import { faGaugeHigh } from "@fortawesome/free-solid-svg-icons";
+import { faGaugeHigh, faUser } from "@fortawesome/free-solid-svg-icons";
+import { UIReducer } from "./reducer/AdminReducer";
 // Initiate fontawesome
 config.autoAddCss = false;
 
@@ -17,7 +18,22 @@ const Items: NavItem[] = [
   {
     icon: <FontAwesomeIcon icon={faGaugeHigh} />,
     name: "Dashboard",
-    path: "/",
+    path: "/admin",
+  },
+  {
+    icon: <FontAwesomeIcon icon={faUser} />,
+    name: "User Management",
+    path: "/admin/users",
+    subItems: [
+      {
+        name: "All Users",
+        path: "/admin/users/all",
+      },
+      {
+        name: "Add New User",
+        path: "/admin/users/new",
+      },
+    ],
   },
 ];
 
@@ -46,10 +62,21 @@ const AdminLayoutContent = ({ children }: { children: React.ReactNode }) => {
 };
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const [uiState] = useReducer(UIReducer, { showErrorAlert: false });
+
+  console.log("UI LAYOUT STATE:", uiState);
+
   return (
     <ThemeProvider>
       <SidebarProvider>
-        <AdminLayoutContent>{children}</AdminLayoutContent>
+        <AdminLayoutContent>
+          {uiState.showErrorAlert && (
+            <div className="fixed top-4 right-4 z-50 rounded bg-red-500 px-4 py-2 text-white shadow">
+              {uiState.message ?? "An unexpected error occurred."}
+            </div>
+          )}
+          {children}
+        </AdminLayoutContent>
       </SidebarProvider>
     </ThemeProvider>
   );

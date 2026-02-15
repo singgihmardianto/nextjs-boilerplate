@@ -30,4 +30,9 @@ export class UserManagementRepository implements IUserManagement {
     const userRepository = await getConnection(User);
     return await userRepository.update(userId, data);
   }
+
+  async resetPassword(userId: number, newPassword: string): Promise<UpdateResult> {
+    const userRepository = await getConnection(User);
+    return await userRepository.update(userId, { password: newPassword });
+  }
 }
