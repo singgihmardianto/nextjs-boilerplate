@@ -5,12 +5,12 @@ import { SidebarProvider, useSidebar } from "@/context/SidebarContext";
 import AppHeader from "@/layout/AppHeader";
 import AppSidebar, { NavItem } from "@/layout/MyAppSidebar";
 import Backdrop from "@/layout/Backdrop";
-import React, { useReducer } from "react";
+import React, { useEffect, useReducer } from "react";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { faGaugeHigh, faUser } from "@fortawesome/free-solid-svg-icons";
-import { UIReducer } from "./reducer/AdminReducer";
+import { UIProvider, useUI } from "./reducer/AdminProvider";
 // Initiate fontawesome
 config.autoAddCss = false;
 
@@ -62,22 +62,43 @@ const AdminLayoutContent = ({ children }: { children: React.ReactNode }) => {
 };
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const [uiState] = useReducer(UIReducer, { showErrorAlert: false });
-
-  console.log("UI LAYOUT STATE:", uiState);
-
   return (
     <ThemeProvider>
-      <SidebarProvider>
-        <AdminLayoutContent>
-          {uiState.showErrorAlert && (
-            <div className="fixed top-4 right-4 z-50 rounded bg-red-500 px-4 py-2 text-white shadow">
-              {uiState.message ?? "An unexpected error occurred."}
-            </div>
-          )}
-          {children}
-        </AdminLayoutContent>
-      </SidebarProvider>
+      <UIProvider>
+        <SidebarProvider>
+          <AdminLayoutContentWrapper>{children}</AdminLayoutContentWrapper>
+        </SidebarProvider>
+      </UIProvider>
     </ThemeProvider>
   );
 }
+
+const AdminLayoutContentWrapper = ({ children }: { children: React.ReactNode }) => {
+  const { state, dispatch } = useUI();
+
+  useEffect(() => {
+    if (state.showErrorAlert || state.showSuccessAlert) {
+      const timer = setTimeout(() => {
+        dispatch({ type: "HIDE_SUCCESS_ALERT" });
+        dispatch({ type: "HIDE_ERROR_ALERT" });
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [state.showErrorAlert, state.showSuccessAlert, dispatch]);
+
+  return (
+    <AdminLayoutContent>
+      {state.showErrorAlert && (
+        <div className="fixed top-25 right-4 z-100 rounded bg-red-500 px-4 py-2 text-white shadow">
+          {state.message ?? "An unexpected error occurred."}
+        </div>
+      )}
+      {state.showSuccessAlert && (
+        <div className="fixed top-25 right-4 z-100 rounded bg-green-500 px-4 py-2 text-white shadow">
+          {state.message ?? "Success!"}
+        </div>
+      )}
+      {children}
+    </AdminLayoutContent>
+  );
+};

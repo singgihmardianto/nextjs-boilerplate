@@ -1,19 +1,24 @@
 "use client";
 import Form from "@/components/form/Form";
-import { createNewUser } from "../_services/UserService";
-import { FormEvent, useReducer } from "react";
-import { UIReducer } from "../../reducer/AdminReducer";
+import { createNewUser } from "../_controller/UserController";
+import { FormEvent } from "react";
+import { useUI } from "../../reducer/AdminProvider";
 
 export default function NewUserPage() {
-  const [, dispatch] = useReducer(UIReducer, { showErrorAlert: false });
+  const { dispatch } = useUI();
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    const form = e.currentTarget;
     try {
       await createNewUser(formData);
+      dispatch({
+        type: "SHOW_SUCCESS_ALERT",
+      });
+      form.reset();
     } catch (error: Error | unknown) {
-      console.error("Error creating user:", error);
+      form.reset();
       dispatch({
         type: "SHOW_ERROR_ALERT",
         payload: error instanceof Error ? error.message : "Failed to create user.",
